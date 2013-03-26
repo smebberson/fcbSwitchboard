@@ -35,8 +35,21 @@
 		<cfset var eventDispatcher = CreateObject("component", "EventDispatcher") />
 
 		<cfscript>
-			eventDispatcher.addEventListener('log', handleEvent);
-			assertTrue(eventDispatcher.hasEventListener('log'));
+			eventDispatcher.addEventListener('log', this, 'handleEvent');
+			assertTrue(eventDispatcher.hasEventListener('log', this, 'handleEvent'));
+		</cfscript>
+
+	</cffunction>
+
+	<cffunction name="should_be_able_to_listen_to_an_event" returntype="void" access="public">
+
+		<cfset var ed = CreateObject("component", "EventTestHelper") />
+
+		<cfset makePublic(this, 'handleEvent') />
+
+		<cfscript>
+			ed.addEventListener('log', this, 'handleEvent');
+			ed.fireEvent();
 		</cfscript>
 
 	</cffunction>
@@ -46,8 +59,8 @@
 		<cfset var eventDispatcher = CreateObject("component", "EventDispatcher") />
 
 		<cfscript>
-			eventDispatcher.addEventListener('log', handleEvent);
-			assertTrue(eventDispatcher.hasEventListener('log', handleEvent));
+			eventDispatcher.addEventListener('log', 'EventTest', 'handleEvent');
+			assertTrue(eventDispatcher.hasEventListener('log', 'EventTest', 'handleEvent'));
 		</cfscript>
 
 	</cffunction>
@@ -67,8 +80,9 @@
 	<cffunction name="handleEvent" returntype="void" access="private">
 
 		<cfargument name="event" type="Event" required="true" />
-		
-		<cfset assertIsTypeOf(e, 'farcry.plugins.fcbswitchboard.packages.fcb.Event') />
+
+		<cfset assertEquals('log', arguments.event.type) />
+		<cfset assertIsTypeOf(arguments.event, 'farcry.plugins.fcbswitchboard.packages.fcb.Event') />
 
 	</cffunction>
 	
